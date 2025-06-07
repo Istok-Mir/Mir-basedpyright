@@ -1,12 +1,9 @@
 from __future__ import annotations
-from Mir import LanguageServer
-from Mir.api import ActivityIndicator
-from Mir.package_storage import PackageStorage, run_command
+from Mir import LanguageServer, ActivityIndicator, deno, PackageStorage, run_command
 import sublime
 import sys
 import re
 import os
-from Mir.runtime import deno
 
 
 server_storage = PackageStorage(__package__, tag='0.0.1', sync_folder="./language-server")
