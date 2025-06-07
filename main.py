@@ -1,5 +1,5 @@
 from __future__ import annotations
-from Mir import LanguageServer, ActivityIndicator, deno, PackageStorage, run_command
+from Mir import LanguageServer, LoaderInStatusBar, deno, PackageStorage, run_command
 import sublime
 import sys
 import re
@@ -21,7 +21,7 @@ class BasedpyrightLanguageServer(LanguageServer):
         await deno.setup()
         server_path = server_storage / "language-server" / "node_modules" / "basedpyright" / "langserver.index.js"
         if not server_path.exists():
-            with ActivityIndicator(sublime.active_window(), f'installing {self.name}'):
+            with LoaderInStatusBar(f'installing {self.name}'):
                 await run_command([deno.path, "install"], cwd=str(server_storage / "language-server"))
 
         # tweak settings
