@@ -6,7 +6,16 @@ import re
 import os
 
 
-server_storage = PackageStorage(tag='0.0.1', sync_folder="./language-server")
+server_storage = PackageStorage(tag='0.0.1')
+server_path = server_storage / "language-server" / "node_modules" / "basedpyright" / "langserver.index.js"
+
+async def package_storage_setup():
+    if server_path.exists():
+        return
+    await deno.setup()
+    server_storage.copy("./language-server")
+    with LoaderInStatusBar(f'installing basedpyright'):
+        await command([deno.path, "install"], cwd=str(server_storage / "language-server"))
 
 
 class BasedpyrightLanguageServer(LanguageServer):
@@ -18,11 +27,7 @@ class BasedpyrightLanguageServer(LanguageServer):
 
     async def activate(self):
         # setup runtime and install dependencies
-        await deno.setup()
-        server_path = server_storage / "language-server" / "node_modules" / "basedpyright" / "langserver.index.js"
-        if not server_path.exists():
-            with LoaderInStatusBar(f'installing {self.name}'):
-                await command([deno.path, "install"], cwd=str(server_storage / "language-server"))
+        await package_storage_setup()
 
         # tweak settings
         dev_environment = self.settings.get("basedpyright.dev_environment")
